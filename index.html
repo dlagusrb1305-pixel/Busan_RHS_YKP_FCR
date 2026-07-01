@@ -46,6 +46,24 @@
   .sec-h .ico{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
     background:var(--navy); color:#fff; font-size:13px; font-weight:800}
   .sec-h .ico.cam{background:var(--amber)}
+  .sec-h .ico.org{background:#3E6E8E}
+  .org-top{margin-bottom:9px}
+  .org-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+  .org-card{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    border:1.4px solid var(--line); background:#fff; border-radius:11px; padding:10px 5px; width:100%;
+    font-family:inherit; line-height:1.2}
+  .org-card b{font-size:14px; font-weight:800; color:var(--ink)}
+  .org-card span{font-size:10.5px; font-weight:700; color:var(--sub)}
+  .org-card:active{background:var(--chip)}
+  .org-card.sel{border-color:var(--navy); background:#EAF0F6}
+  .org-card.boss{background:var(--navy); border-color:var(--navy); padding:13px}
+  .org-card.boss b{color:#fff; font-size:16px}
+  .org-card.boss span{color:#cfdcea}
+  .org-card.boss.sel{background:var(--navy2)}
+  .org-card.lead{background:var(--amber-bg); border-color:#E6C58A}
+  .org-card.lead b{color:var(--amber)}
+  .org-card.lead span{color:#9a6a1e}
+  .org-card.lead.sel{border-color:var(--amber); background:#F6E3C8}
   .sec-h h2{margin:0; font-size:14px; font-weight:800; letter-spacing:-.2px}
   .sec-h .sum{margin-left:auto; font-size:12px; color:var(--sub); font-weight:700}
   .sec-b{padding:12px 14px}
@@ -197,6 +215,29 @@
   <div class="notice" id="memNotice">이 미리보기에서는 저장이 일시적일 수 있습니다. 휴대폰 브라우저에서 파일을 열면 사진까지 영구 저장됩니다.</div>
 
   <div class="card">
+    <div class="sec-h"><span class="ico org">조</span><h2>현장 조직도</h2><span class="sum">탭하면 작성자 자동 입력</span></div>
+    <div class="sec-b">
+      <div class="org-top">
+        <button type="button" class="org-card boss" onclick="pickAuthor('김윤삼',this)"><b>김윤삼</b><span>현장소장</span></button>
+      </div>
+      <div class="org-grid">
+        <button type="button" class="org-card" onclick="pickAuthor('윤보안',this)"><b>윤보안</b><span>공사부장</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('임현규',this)"><b>임현규</b><span>공무부장</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('황원',this)"><b>황원</b><span>품질</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('송명호',this)"><b>송명호</b><span>안전</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('한승호',this)"><b>한승호</b><span>자재</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('조정섭',this)"><b>조정섭</b><span>관리</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('김세민',this)"><b>김세민</b><span>관리</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('서기열',this)"><b>서기열</b><span>전기</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('김지원',this)"><b>김지원</b><span>공구관리</span></button>
+        <button type="button" class="org-card lead" onclick="pickAuthor('송병주',this)"><b>송병주</b><span>철골팀장</span></button>
+        <button type="button" class="org-card lead" onclick="pickAuthor('전장근',this)"><b>전장근</b><span>제관팀장</span></button>
+        <button type="button" class="org-card lead" onclick="pickAuthor('전형갑',this)"><b>전형갑</b><span>호퍼제작팀장</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="sec-h"><span class="ico">1</span><h2>기본 정보</h2></div>
     <div class="sec-b">
       <div class="grid2 mb">
@@ -213,17 +254,13 @@
       </div>
       <div class="mb hide" id="locEtcWrap"><input type="text" id="fLocEtc" placeholder="위치 직접 입력"></div>
       <div class="mb">
-        <label class="fld">작성자 / 팀</label>
-        <input type="text" id="fAuthor" list="dlAuthor" placeholder="예) 윤보안 / 자재팀">
+        <label class="fld req">작성자 이름 / 팀</label>
+        <input type="text" id="fAuthor" list="dlAuthor" placeholder="이름 입력 (예: 윤보안)">
       </div>
       <div class="mb">
-        <label class="fld req">돌관작업 종류</label>
-        <select id="fKind">
-          <option value="">선택</option>
-          <option>야간작업</option><option>휴일작업</option><option>주간 연장</option>
-          <option>철야작업</option><option>긴급 투입</option><option>선행 작업</option>
-          <option>재작업</option><option>기타</option>
-        </select>
+        <label class="fld req">돌관작업 종류 <span style="font-weight:500;color:#9aa3ad">· 직접입력 가능</span></label>
+        <input type="text" id="fKind" list="dlKind" placeholder="선택하거나 직접 입력 (예: 야간작업)">
+        <datalist id="dlKind"><option>야간작업</option><option>휴일작업</option><option>주간 연장</option><option>철야작업</option><option>긴급 투입</option><option>선행 작업</option><option>재작업</option><option>기타</option></datalist>
       </div>
       <label class="fld">작업 시간 (시작 ~ 종료)</label>
       <div class="grid-t mb"><input type="time" id="fStart"><div class="to">~</div><input type="time" id="fEnd"></div>
@@ -234,10 +271,14 @@
   <div class="card">
     <div class="sec-h"><span class="ico">2</span><h2>작업 내용</h2></div>
     <div class="sec-b">
+      <label class="fld">FCR 종류 <span style="font-weight:500;color:#9aa3ad">· 직접입력 가능</span></label>
+      <input type="text" id="fFcr" list="dlFcr" placeholder="선택하거나 직접 입력 (예: 지급자재 미입고)">
+      <datalist id="dlFcr"><option>지급자재 누락</option><option>지급자재 미입고</option><option>납기 지연</option><option>혼재 반입</option><option>자재 오입고</option><option>도면 불일치</option><option>제작 오류</option><option>가공 오류</option><option>Hole 불일치</option><option>Anchor Bolt 간섭</option><option>Base Plate Hole 과대</option><option>현장 수정작업</option><option>재작업</option><option>승인 지연</option><option>비용 미확정</option><option>기타</option></datalist>
+      <div style="height:11px"></div>
       <textarea id="fDesc" placeholder="예) 메다 PL 미입고 대기 후 야간 지조립 / 산소절단 후 Hole 확공 재작업"></textarea>
       <div style="height:11px"></div>
-      <label class="fld">관련 이슈 No. (선택 · 트래커 연계)</label>
-      <input type="text" id="fIssue" inputmode="numeric" placeholder="예) 14">
+      <label class="fld">관련 이슈 / FCR 번호 <span style="font-weight:500;color:#9aa3ad">· 작성자 직전 번호에서 자동 +1 (수정 가능)</span></label>
+      <input type="text" id="fIssue" inputmode="numeric" placeholder="작성자 입력 시 자동">
     </div>
   </div>
 
@@ -289,7 +330,7 @@
     </div>
   </div>
 
-  <datalist id="dlAuthor"><option>윤보안 (현장대리인)</option><option>한승호 (자재)</option><option>조정섭 (관리)</option><option>황원 (품질/안전)</option><option>송명호 (안전관리자)</option><option>서기열 (전기)</option></datalist>
+  <datalist id="dlAuthor"><option>김윤삼</option><option>윤보안</option><option>임현규</option><option>황원</option><option>송명호</option><option>한승호</option><option>조정섭</option><option>김세민</option><option>서기열</option><option>김지원</option><option>송병주</option><option>전장근</option><option>전형갑</option></datalist>
   <datalist id="dlJob"><option>철골공</option><option>용접공</option><option>볼팅공</option><option>도비공</option><option>신호수</option><option>크레인기사</option><option>지게차기사</option><option>보통인부</option><option>관리자</option><option>안전관리자</option></datalist>
   <datalist id="dlEq"><option>크롤러크레인 250T</option><option>크롤러크레인 100T</option><option>카고크레인 25T</option><option>지게차 15T</option><option>지게차 7T</option><option>고소작업차</option><option>용접기</option><option>발전기</option></datalist>
 </div>
@@ -513,15 +554,16 @@ function collect(){
   $('manRows').querySelectorAll('.row').forEach(r=>{const i=r.querySelectorAll('input'); if(i[0].value.trim()||i[1].value) man.push({job:i[0].value.trim(),cnt:num(i[1].value),hr:num(i[2].value)});});
   $('eqRows').querySelectorAll('.row').forEach(r=>{const i=r.querySelectorAll('input'); if(i[0].value.trim()) eq.push({name:i[0].value.trim(),cnt:num(i[1].value),hr:num(i[2].value)});});
   $('matRows').querySelectorAll('.row').forEach(r=>{const i=r.querySelectorAll('input'); if(i[0].value.trim()) mat.push({name:i[0].value.trim(),qty:num(i[1].value),unit:i[2].value.trim()});});
-  return {date:$('fDate').value||todayStr(), loc:curLoc(), author:$('fAuthor').value.trim(), kind:$('fKind').value,
+  return {date:$('fDate').value||todayStr(), loc:curLoc(), author:$('fAuthor').value.trim(), kind:$('fKind').value.trim(), fcr:$('fFcr').value.trim(),
     start:$('fStart').value, end:$('fEnd').value, dur:durHours($('fStart').value,$('fEnd').value),
     desc:$('fDesc').value.trim(), issue:$('fIssue').value.trim(), note:$('fNote').value.trim(),
     man, eq, mat, photos:formPhotos.slice()};
 }
 async function saveRecord(){
   const r=collect();
+  if(!r.author){ toast('작성자 이름을 입력하세요'); return; }
   if(!r.loc){ toast('위치를 선택하세요'); return; }
-  if(!r.kind){ toast('돌관작업 종류를 선택하세요'); return; }
+  if(!r.kind){ toast('돌관작업 종류를 입력하세요'); return; }
   if(!r.desc && r.man.length===0 && r.photos.length===0){ toast('내용·인원·사진 중 하나는 입력하세요'); return; }
   if(editId){ r.id=editId; const i=records.findIndex(x=>x.id===editId); if(i>-1) records[i]=r; editId=null; $('btnSave').textContent='저장'; }
   else { r.id=Date.now()+''+Math.floor(Math.random()*1000); records.unshift(r); }
@@ -529,13 +571,33 @@ async function saveRecord(){
   try{ if(r.author) localStorage.setItem('rhs_last_author', r.author); }catch(e){}
   renderList(); resetForm(false); toast('저장되었습니다'); showTab('list');
 }
+/* 작성자 기준 다음 이슈/FCR 번호 = 그 사람 기록 중 최대 번호 + 1 */
+function nextIssueFor(a){
+  a=(a||'').trim(); if(!a) return '';
+  let mx=0; records.forEach(r=>{ if((r.author||'').trim()===a){ const n=parseInt(r.issue,10); if(!isNaN(n)&&n>mx) mx=n; } });
+  return mx>0 ? (mx+1) : 1;
+}
+function autoIssue(force){
+  if(editId) return;
+  const a=$('fAuthor').value.trim(); if(!a) return;
+  if(force || !$('fIssue').value.trim()){ const v=nextIssueFor(a); if(v) $('fIssue').value=v; }
+}
+/* 조직도 카드 클릭 → 작성자 칸에 이름만 입력 + 작성자별 번호 자동 */
+function pickAuthor(name, el){
+  $('fAuthor').value=name;
+  try{ localStorage.setItem('rhs_last_author', name); }catch(e){}
+  document.querySelectorAll('.org-card').forEach(c=>c.classList.remove('sel'));
+  if(el) el.classList.add('sel');
+  autoIssue(true);
+  toast(name+' 작성자 선택');
+}
 function resetForm(ask){
   if(ask){ const c=collect(); if((c.desc||c.man.length||c.photos.length) && !confirm('작성 중인 내용을 지우고 새로 시작할까요?')) return; }
   $('fDate').value=todayStr(); $('fLoc').value=''; $('locEtcWrap').classList.add('hide'); $('fLocEtc').value='';
-  $('fKind').value=''; $('fStart').value=''; $('fEnd').value=''; $('fDesc').value=''; $('fIssue').value=''; $('fNote').value='';
+  $('fKind').value=''; $('fFcr').value=''; $('fStart').value=''; $('fEnd').value=''; $('fDesc').value=''; $('fIssue').value=''; $('fNote').value='';
   try{ const la=localStorage.getItem('rhs_last_author'); if(la) $('fAuthor').value=la; }catch(e){}
   $('manRows').innerHTML=''; $('eqRows').innerHTML=''; $('matRows').innerHTML='';
-  formPhotos=[]; renderPhotos(); addMan(); editId=null; $('btnSave').textContent='저장'; calc();
+  formPhotos=[]; renderPhotos(); addMan(); editId=null; $('btnSave').textContent='저장'; calc(); autoIssue(true);
 }
 
 /* ============ list ============ */
@@ -555,8 +617,9 @@ function renderList(){
     if(eq) chips.push(`<span class="chip">장비 ${eq}대</span>`);
     if(r.mat.length) chips.push(`<span class="chip">자재 ${r.mat.length}품목</span>`);
     if(r.dur) chips.push(`<span class="chip">${f1(r.dur)}h</span>`);
+    if(r.fcr) chips.push(`<span class="chip" style="background:#FBF1E2;color:#8A5A1E">FCR ${esc(r.fcr)}</span>`);
     if(ph) chips.push(`<span class="chip ph">📷 ${ph}매</span>`);
-    if(r.issue) chips.push(`<span class="chip">이슈 #${r.issue}</span>`);
+    if(r.issue) chips.push(`<span class="chip">#${esc(r.issue)}</span>`);
     const thumbs = ph?`<div class="rec-ph">${r.photos.slice(0,8).map(p=>`<img src="${p.data}" onclick="viewSaved('${r.id}','${p.id}')">`).join('')}</div>`:'';
     return `<div class="rec">
       <div class="rec-h"><span class="kind">${esc(r.kind)||'-'}</span>
@@ -586,7 +649,7 @@ function editRec(id){
   const opts=[...$('fLoc').options].map(o=>o.value);
   if(opts.includes(r.loc)){ $('fLoc').value=r.loc; $('locEtcWrap').classList.add('hide'); }
   else { $('fLoc').value='기타(직접입력)'; $('locEtcWrap').classList.remove('hide'); $('fLocEtc').value=r.loc; }
-  $('fKind').value=r.kind; $('fStart').value=r.start; $('fEnd').value=r.end; $('fAuthor').value=r.author||'';
+  $('fKind').value=r.kind||''; $('fFcr').value=r.fcr||''; $('fStart').value=r.start; $('fEnd').value=r.end; $('fAuthor').value=r.author||'';
   $('fDesc').value=r.desc; $('fIssue').value=r.issue||''; $('fNote').value=r.note||'';
   $('manRows').innerHTML=''; $('eqRows').innerHTML=''; $('matRows').innerHTML='';
   (r.man.length?r.man:[{}]).forEach(m=>addMan(m.job||'',m.cnt||'',m.hr||''));
@@ -598,14 +661,14 @@ function editRec(id){
 /* ============ kakao / csv ============ */
 function recText(r){
   const men=r.man.reduce((s,m)=>s+m.cnt,0), md=r.man.reduce((s,m)=>s+m.cnt*m.hr/8,0);
-  let t=`[돌관작업 일보] ${r.date} (${dow(r.date)})\n■ 위치: ${r.loc}\n${r.author?`■ 작성: ${r.author}\n`:''}■ 종류: ${r.kind}\n`;
+  let t=`[돌관작업 일보] ${r.date} (${dow(r.date)})\n■ 위치: ${r.loc}\n${r.author?`■ 작성: ${r.author}\n`:''}■ 종류: ${r.kind}\n${r.fcr?`■ FCR 종류: ${r.fcr}\n`:''}`;
   if(r.start) t+=`■ 시간: ${r.start}~${r.end||''} (${f1(r.dur)}h)\n`;
   if(r.desc) t+=`■ 내용: ${r.desc}\n`;
   if(r.man.length){ t+=`\n▶ 투입 인원 (총 ${men}명 / ${f1(md)} 공수)\n`; r.man.forEach(m=>t+=` - ${m.job||'-'} ${m.cnt}명 × ${f1(m.hr)}h\n`); }
   if(r.eq.length){ t+=`▶ 장비 투입\n`; r.eq.forEach(e=>t+=` - ${e.name} ${e.cnt}대${e.hr?` × ${f1(e.hr)}h`:''}\n`); }
   if(r.mat.length){ t+=`▶ 자재 투입\n`; r.mat.forEach(m=>t+=` - ${m.name} ${m.qty}${m.unit||''}\n`); }
   if((r.photos||[]).length) t+=`※ 현장 사진 ${r.photos.length}매 첨부 (별도 전송)\n`;
-  if(r.issue) t+=`※ 관련 이슈 No.${r.issue}\n`;
+  if(r.issue) t+=`※ 이슈/FCR 번호: ${r.issue}\n`;
   if(r.note) t+=`※ 비고: ${r.note}\n`;
   return t.trim();
 }
@@ -618,10 +681,10 @@ function copyKakao(id){
 function csvCell(v){ v=(v==null?'':String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
 function exportCSV(){
   if(records.length===0){ toast('내보낼 기록이 없습니다'); return; }
-  const head=['일자','요일','위치','작성자/팀','돌관작업 종류','시작','종료','작업시간(h)','작업내용','구분','항목/규격','인원·대수·수량','시간(h)/단위','공수(M/D)','사진매수','관련이슈No','비고'];
+  const head=['일자','요일','위치','작성자/팀','돌관작업 종류','FCR 종류','시작','종료','작업시간(h)','작업내용','구분','항목/규격','인원·대수·수량','시간(h)/단위','공수(M/D)','사진매수','이슈/FCR번호','비고'];
   const rows=[head];
   sorted().slice().reverse().forEach(r=>{
-    const base=[r.date,dow(r.date),r.loc,r.author||'',r.kind,r.start,r.end,f1(r.dur),r.desc];
+    const base=[r.date,dow(r.date),r.loc,r.author||'',r.kind,r.fcr||'',r.start,r.end,f1(r.dur),r.desc];
     const tail=[(r.photos||[]).length,r.issue,r.note]; let any=false;
     r.man.forEach(m=>{ rows.push([...base,'인원',m.job,m.cnt,f1(m.hr),f1(m.cnt*m.hr/8),...tail]); any=true; });
     r.eq.forEach(e=>{ rows.push([...base,'장비',e.name,e.cnt,f1(e.hr),'',...tail]); any=true; });
@@ -649,8 +712,9 @@ function photoSheet(id){
       <tr><td style="background:#EEF1F5;font-weight:700">위치</td><td>${esc(r.loc)}</td>
           <td style="background:#EEF1F5;font-weight:700">작성자</td><td>${esc(r.author)||'-'}</td></tr>
       <tr><td style="background:#EEF1F5;font-weight:700">종류</td><td>${esc(r.kind)}${r.start?` (${r.start}~${r.end||''})`:''}</td>
-          <td style="background:#EEF1F5;font-weight:700">관련 이슈</td><td>${r.issue?('No.'+esc(r.issue)):'-'}</td></tr>
-      <tr><td style="background:#EEF1F5;font-weight:700">투입</td><td colspan="3">${inputSummary||'-'}</td></tr>
+          <td style="background:#EEF1F5;font-weight:700">FCR 종류</td><td>${esc(r.fcr)||'-'}</td></tr>
+      <tr><td style="background:#EEF1F5;font-weight:700">이슈/FCR 번호</td><td>${r.issue?esc(r.issue):'-'}</td>
+          <td style="background:#EEF1F5;font-weight:700">투입</td><td>${inputSummary||'-'}</td></tr>
       <tr><td style="background:#EEF1F5;font-weight:700">작업 내용</td><td colspan="3">${esc(r.desc)||'-'}</td></tr>
       ${r.note?`<tr><td style="background:#EEF1F5;font-weight:700">비고</td><td colspan="3">${esc(r.note)}</td></tr>`:''}
     </table>
@@ -700,6 +764,8 @@ function showTab(t){
 }
 $('fLoc').addEventListener('change',e=>{ $('locEtcWrap').classList.toggle('hide',e.target.value!=='기타(직접입력)'); });
 $('fStart').addEventListener('change',calc); $('fEnd').addEventListener('change',calc);
+$('fAuthor').addEventListener('change',()=>autoIssue(true));
+$('fAuthor').addEventListener('blur',()=>autoIssue(false));
 // reset modal disabled state when opening from form
 $('photoModal').addEventListener('click',e=>{ if(e.target.id==='photoModal') closePhoto(); });
 function unlockModal(){ $('mCat').disabled=false; $('mCap').disabled=false; $('photoModal').querySelector('.m-del').style.display=''; }
@@ -711,7 +777,8 @@ const _open=openPhoto; openPhoto=function(i){ unlockModal(); _open(i); };
   records=await loadAll();
   $('hDate').textContent=`${todayStr()} (${dow(new Date())})`;
   $('fDate').value=todayStr();
-  addMan(); renderPhotos(); renderList(); calc();
+  try{ const la=localStorage.getItem('rhs_last_author'); if(la) $('fAuthor').value=la; }catch(e){}
+  addMan(); renderPhotos(); renderList(); calc(); autoIssue(true);
 })();
 </script>
 </body>
