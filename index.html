@@ -151,6 +151,12 @@
   .dmgmt button{border:1px solid var(--line); background:#fff; color:var(--navy2);
     padding:8px 11px; border-radius:9px; font-size:12.5px; font-weight:800}
   .dmgmt button:active{background:var(--chip)}
+  .syncbar{display:flex; align-items:center; gap:8px; margin:0 0 12px; font-size:12.5px; font-weight:800; color:var(--sub)}
+  .syncbar.on{color:var(--green)}
+  .syncbar #syncRetry{background:var(--amber); color:#fff; border:none; padding:7px 11px; border-radius:9px; font-size:12px; font-weight:800}
+  .syncbar .syncset{margin-left:auto; background:#fff; border:1px solid var(--line); color:var(--navy2); padding:7px 11px; border-radius:9px; font-size:12px; font-weight:800}
+  .syncpanel{margin-bottom:12px}
+  .chip.pend{background:#FBE9E7; color:var(--red)}
   .rec{background:#fff; border:1px solid var(--line); border-radius:13px; box-shadow:var(--shadow); margin-bottom:11px; overflow:hidden}
   .rec-h{padding:11px 13px; display:flex; align-items:flex-start; gap:9px}
   .rec-h .kind{flex-shrink:0; font-size:11px; font-weight:800; padding:4px 8px; border-radius:7px;
@@ -350,6 +356,27 @@
     <button onclick="document.getElementById('importInput').click()">백업 가져오기(병합)</button>
     <input type="file" id="importInput" accept="application/json,.json" class="hide" onchange="importJSON(this)">
   </div>
+  <div class="syncbar" id="syncBar">
+    <span id="syncStat">자동취합: 꺼짐</span>
+    <button id="syncRetry" class="hide" onclick="pushUnsynced(true)">미전송 전송</button>
+    <button class="syncset" onclick="toggleSyncPanel()">⚙ 설정</button>
+  </div>
+  <div class="card syncpanel hide" id="syncPanel">
+    <div class="sec-b">
+      <label class="fld req">구글 Apps Script 주소 (웹앱 URL)</label>
+      <input type="text" id="syncUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+      <div style="height:10px"></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ink)">
+        <input type="checkbox" id="syncPhotosChk" style="width:auto;margin:0" checked> 사진도 자동 전송 (구글 드라이브 저장)
+      </label>
+      <div style="height:12px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" style="flex:1;padding:12px" onclick="toggleSyncPanel()">닫기</button>
+        <button class="btn btn-main" style="flex:1.4;padding:12px" onclick="saveSyncCfg()">저장</button>
+      </div>
+      <div class="mini" style="margin-top:10px">이 기기에서 저장됩니다. 팀장 전체에 적용하려면 index.html 상단 <b>SYNC_URL</b> 한 줄에 넣어 GitHub에 올리세요.</div>
+    </div>
+  </div>
   <div id="recList"></div>
 </div>
 
@@ -393,6 +420,9 @@
 <script>
 /* ============ storage: IndexedDB (+ localStorage fallback) ============ */
 const KEY='rhs_dolgwan_logs_v1';
+/* ===== 자동취합(구글시트) 설정 ===== */
+const SYNC_URL   = "https://script.google.com/macros/s/AKfycby0O6hLczUpuBzVeKNKYVPjMbqte75lT2zIRedLpKAcxdt1_eOIjmRtoIS6el_MYG0E/exec";          /* ← 현규: 구글 Apps Script 웹앱 URL을 여기 따옴표 안에 붙여넣고 GitHub에 업로드하면 전 팀장에 적용 */
+const SYNC_TOKEN = "rhs2026";   /* Apps Script의 TOKEN과 동일해야 함 */
 let useIDB=true, idb=null, memOnly=false, mem=[];
 function openDB(){return new Promise(res=>{
   try{
@@ -567,10 +597,59 @@ async function saveRecord(){
   if(!r.desc && r.man.length===0 && r.photos.length===0){ toast('내용·인원·사진 중 하나는 입력하세요'); return; }
   if(editId){ r.id=editId; const i=records.findIndex(x=>x.id===editId); if(i>-1) records[i]=r; editId=null; $('btnSave').textContent='저장'; }
   else { r.id=Date.now()+''+Math.floor(Math.random()*1000); records.unshift(r); }
+  r.synced=false;
   await persist(r);
   try{ if(r.author) localStorage.setItem('rhs_last_author', r.author); }catch(e){}
   renderList(); resetForm(false); toast('저장되었습니다'); showTab('list');
+  // 자동취합: 저장 즉시 백그라운드 전송 (실패해도 로컬 저장은 유지, 나중에 재전송)
+  if(getSyncUrl()){
+    pushRecord(r).then(async ok=>{ if(ok){ r.synced=true; await persist(r); updateSyncUI(); renderList(); } });
+  }
 }
+
+/* ============ 자동취합(구글시트) ============ */
+function getSyncUrl(){ try{ return (localStorage.getItem('rhs_sync_url')||'').trim() || SYNC_URL; }catch(e){ return SYNC_URL; } }
+function getSyncPhotos(){ try{ const v=localStorage.getItem('rhs_sync_photos'); return v===null?true:v==='1'; }catch(e){ return true; } }
+async function pushRecord(r){
+  const url=getSyncUrl(); if(!url) return false;
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({token:SYNC_TOKEN, withPhotos:getSyncPhotos(), record:r})});
+    return true;   // no-cors라 응답은 못 읽지만, 네트워크 전송 성공이면 시트에 반영됨
+  }catch(e){ return false; }
+}
+async function pushUnsynced(manual){
+  const url=getSyncUrl(); if(!url){ if(manual) toast('먼저 ⚙설정에서 주소를 넣으세요'); return; }
+  const pend=records.filter(r=>!r.synced);
+  if(!pend.length){ updateSyncUI(); if(manual) toast('전송할 미전송 기록이 없습니다'); return; }
+  if(manual) toast('전송 중…');
+  for(const r of pend){ const ok=await pushRecord(r); if(ok){ r.synced=true; await persist(r); } }
+  updateSyncUI(); renderList(); if(manual) toast('전송 완료');
+}
+function updateSyncUI(){
+  const on=!!getSyncUrl(); const bar=$('syncBar'); if(!bar) return;
+  bar.classList.toggle('on',on);
+  const pend=records.filter(r=>!r.synced).length;
+  if(!on){ $('syncStat').textContent='자동취합: 꺼짐'; $('syncRetry').classList.add('hide'); return; }
+  $('syncStat').textContent = pend>0 ? `자동취합: 켜짐 · 미전송 ${pend}건` : '자동취합: 켜짐 · 모두 전송됨';
+  $('syncRetry').classList.toggle('hide', pend===0);
+}
+function toggleSyncPanel(){
+  const p=$('syncPanel'); const show=p.classList.contains('hide');
+  if(show){ try{ $('syncUrlInput').value=localStorage.getItem('rhs_sync_url')||''; }catch(e){} $('syncPhotosChk').checked=getSyncPhotos(); }
+  p.classList.toggle('hide');
+}
+function saveSyncCfg(){
+  const url=$('syncUrlInput').value.trim();
+  try{
+    localStorage.setItem('rhs_sync_url', url);
+    localStorage.setItem('rhs_sync_photos', $('syncPhotosChk').checked?'1':'0');
+  }catch(e){}
+  $('syncPanel').classList.add('hide'); updateSyncUI();
+  toast(url?'자동취합 켜짐':'주소가 비어 자동취합 꺼짐');
+  if(url) pushUnsynced(false);
+}
+
 /* 작성자 기준 다음 이슈/FCR 번호 = 그 사람 기록 중 최대 번호 + 1 */
 function nextIssueFor(a){
   a=(a||'').trim(); if(!a) return '';
@@ -620,6 +699,7 @@ function renderList(){
     if(r.fcr) chips.push(`<span class="chip" style="background:#FBF1E2;color:#8A5A1E">FCR ${esc(r.fcr)}</span>`);
     if(ph) chips.push(`<span class="chip ph">📷 ${ph}매</span>`);
     if(r.issue) chips.push(`<span class="chip">#${esc(r.issue)}</span>`);
+    if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송</span>`);
     const thumbs = ph?`<div class="rec-ph">${r.photos.slice(0,8).map(p=>`<img src="${p.data}" onclick="viewSaved('${r.id}','${p.id}')">`).join('')}</div>`:'';
     return `<div class="rec">
       <div class="rec-h"><span class="kind">${esc(r.kind)||'-'}</span>
@@ -760,7 +840,7 @@ function showTab(t){
   const w=t==='write';
   $('viewWrite').classList.toggle('hide',!w); $('viewList').classList.toggle('hide',w); $('saveBar').classList.toggle('hide',!w);
   $('tabWrite').classList.toggle('on',w); $('tabList').classList.toggle('on',!w);
-  if(!w) renderList(); window.scrollTo(0,0);
+  if(!w){ renderList(); updateSyncUI(); pushUnsynced(false); } window.scrollTo(0,0);
 }
 $('fLoc').addEventListener('change',e=>{ $('locEtcWrap').classList.toggle('hide',e.target.value!=='기타(직접입력)'); });
 $('fStart').addEventListener('change',calc); $('fEnd').addEventListener('change',calc);
@@ -779,6 +859,7 @@ const _open=openPhoto; openPhoto=function(i){ unlockModal(); _open(i); };
   $('fDate').value=todayStr();
   try{ const la=localStorage.getItem('rhs_last_author'); if(la) $('fAuthor').value=la; }catch(e){}
   addMan(); renderPhotos(); renderList(); calc(); autoIssue(true);
+  updateSyncUI(); pushUnsynced(false);
 })();
 </script>
 </body>
