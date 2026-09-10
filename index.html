@@ -30,12 +30,18 @@
   .h-title{font-size:17px; font-weight:800; letter-spacing:-.2px}
   .h-title small{display:block; font-weight:500; font-size:11px; opacity:.72; letter-spacing:0}
   .h-date{font-size:12px; opacity:.85}
-  .tabs{display:flex; gap:6px; margin-top:10px}
-  .tab{flex:1; text-align:center; padding:8px 0; font-size:13px; font-weight:700;
-    background:rgba(255,255,255,.12); color:#cfdcea; border-radius:9px; border:none}
+  .tabs{display:flex; gap:5px; margin-top:10px}
+  .tab{flex:1; text-align:center; padding:8px 2px; font-size:12.5px; font-weight:700;
+    background:rgba(255,255,255,.12); color:#cfdcea; border-radius:9px; border:none; white-space:nowrap}
   .tab.on{background:#fff; color:var(--navy)}
-  .badge{display:inline-block; min-width:18px; padding:0 5px; margin-left:5px;
+  .badge{display:inline-block; min-width:18px; padding:0 5px; margin-left:3px;
     background:var(--amber); color:#fff; border-radius:9px; font-size:11px; font-weight:800}
+  .chip.tool{background:var(--amber-bg); color:var(--amber)}
+  .chip.lunch{background:var(--green-bg); color:var(--green)}
+  .typetag{display:inline-block; font-size:11px; font-weight:800; padding:4px 8px; border-radius:7px; white-space:nowrap}
+  .typetag.log{background:#D9E7F2; color:var(--navy2)}
+  .typetag.tool{background:var(--amber-bg); color:var(--amber)}
+  .typetag.lunch{background:var(--green-bg); color:var(--green)}
   .wrap{max-width:560px; margin:0 auto; padding:14px 12px 0}
   .notice{background:var(--amber-bg); border:1px solid #ECD9BC; color:#7a5212;
     font-size:12px; padding:8px 10px; border-radius:8px; margin-bottom:12px; display:none}
@@ -141,9 +147,10 @@
   .btn-main:active{background:var(--navy2)}
   .btn-ghost{background:var(--chip); color:var(--navy)}
   .listtop{display:flex; gap:8px; margin-bottom:12px; align-items:center}
-  .listtop .seg{display:flex; background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden}
-  .listtop .seg button{border:none; background:#fff; padding:8px 12px; font-size:13px; font-weight:700; color:var(--sub)}
-  .listtop .seg button.on{background:var(--navy); color:#fff}
+  .seg{display:flex; background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden}
+  .seg button{border:none; background:#fff; padding:8px 12px; font-size:13px; font-weight:700; color:var(--sub); flex:1}
+  .seg button.on{background:var(--navy); color:#fff}
+  .typeseg button{padding:8px 6px; font-size:12px}
   .listtop .exp{margin-left:auto; background:var(--green); color:#fff; border:none;
     padding:9px 12px; border-radius:10px; font-size:13px; font-weight:800}
   .dmgmt{display:flex; align-items:center; gap:7px; margin:0 0 14px; flex-wrap:wrap}
@@ -211,8 +218,10 @@
     <div class="h-date" id="hDate"></div>
   </div>
   <div class="tabs">
-    <button class="tab on" id="tabWrite" onclick="showTab('write')">작성</button>
-    <button class="tab" id="tabList" onclick="showTab('list')">저장 목록<span class="badge hide" id="cnt">0</span></button>
+    <button class="tab on" id="tabWrite" onclick="showTab('write')">일보</button>
+    <button class="tab" id="tabTool" onclick="showTab('tool')">공구/소모품</button>
+    <button class="tab" id="tabLunch" onclick="showTab('lunch')">도시락</button>
+    <button class="tab" id="tabList" onclick="showTab('list')">목록<span class="badge hide" id="cnt">0</span></button>
   </div>
 </header>
 
@@ -226,7 +235,9 @@
       <div class="org-grid">
         <button type="button" class="org-card" onclick="pickAuthor('윤보안',this)"><b>윤보안</b><span>공사부장</span></button>
         <button type="button" class="org-card" onclick="pickAuthor('임현규',this)"><b>임현규</b><span>공무부장</span></button>
-        <button type="button" class="org-card" onclick="pickAuthor('황원',this)"><b>황원</b><span>품질</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('황원',this)"><b>황원</b><span>공사</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('황규범',this)"><b>황규범</b><span>공사</span></button>
+        <button type="button" class="org-card" onclick="pickAuthor('황규진',this)"><b>황규진</b><span>품질</span></button>
         <button type="button" class="org-card" onclick="pickAuthor('송명호',this)"><b>송명호</b><span>안전</span></button>
         <button type="button" class="org-card" onclick="pickAuthor('한승호',this)"><b>한승호</b><span>자재</span></button>
         <button type="button" class="org-card" onclick="pickAuthor('조정섭',this)"><b>조정섭</b><span>관리</span></button>
@@ -329,9 +340,86 @@
     </div>
   </div>
 
-  <datalist id="dlAuthor"><option>윤보안</option><option>임현규</option><option>황원</option><option>송명호</option><option>한승호</option><option>조정섭</option><option>김세민</option><option>전장근</option></datalist>
+  <datalist id="dlAuthor"><option>윤보안</option><option>임현규</option><option>황원</option><option>황규범</option><option>황규진</option><option>송명호</option><option>한승호</option><option>조정섭</option><option>김세민</option><option>전장근</option></datalist>
   <datalist id="dlJob"><option>철골</option><option>제관</option><option>제관용접</option><option>도비</option><option>신호수</option><option>유도원</option><option>관리자</option><option>안전관리자</option><option>비계공</option><option>도장공</option></datalist>
   <datalist id="dlEq"><option>하이드로크레인 220톤</option><option>하이드로크레인 100톤</option><option>하이드로크레인 70톤</option><option>하이드로크레인 50톤</option><option>크롤러크레인 100톤</option><option>카고크레인 25톤</option><option>지게차 23톤</option><option>지게차 15톤</option><option>지게차 7톤</option><option>지게차 4.5톤</option><option>고소작업차</option><option>용접발전기</option><option>발전기</option><option>1톤 화물차</option></datalist>
+</div>
+
+<!-- ===================== 공구/소모품 신청 ===================== -->
+<div class="wrap hide" id="viewTool">
+  <div class="card">
+    <div class="sec-h"><span class="ico" style="background:var(--amber)">공</span><h2>공구/소모품 신청</h2></div>
+    <div class="sec-b">
+      <div class="grid2 mb">
+        <div><label class="fld">일자</label><input type="date" id="tDate"></div>
+        <div><label class="fld req">신청자</label><input type="text" id="tAuthor" list="dlAuthor" placeholder="이름 입력"></div>
+      </div>
+      <div class="mb">
+        <label class="fld">위치/구역 <span style="font-weight:500;color:#9aa3ad">· 선택</span></label>
+        <select id="tLoc">
+          <option value="">선택 안 함</option>
+          <option>D동</option><option>C동</option><option>B동</option>
+          <option>서측 제작장</option><option>북측 공사부지</option>
+          <option>연도 야적장</option><option>송도 야적장</option><option>터널</option><option>기타</option>
+        </select>
+      </div>
+      <label class="fld">긴급도</label>
+      <div class="mb">
+        <select id="tUrgent"><option>일반</option><option>긴급</option></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-h"><span class="ico" style="background:var(--amber)">품</span><h2>신청 품목</h2><span class="sum" id="sumTool">0품목</span></div>
+    <div class="sec-b">
+      <div class="mini">품목명 / 규격 · 수량 · 단위</div>
+      <div id="toolRows"></div>
+      <button class="add" onclick="addToolItem()">+ 품목 추가</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-h"><span class="ico" style="background:var(--amber)">사</span><h2>용도 / 사유</h2></div>
+    <div class="sec-b">
+      <textarea id="tReason" placeholder="예) D동 철골 수정작업용 그라인더 디스크 소모"></textarea>
+      <div style="height:11px"></div>
+      <label class="fld">비고</label>
+      <input type="text" id="tNote" placeholder="선택 입력">
+    </div>
+  </div>
+  <datalist id="dlToolItem"><option>그라인더 디스크</option><option>절단석</option><option>용접봉</option><option>산소</option><option>아세틸렌</option><option>장갑</option><option>드릴 비트</option><option>볼트/너트</option><option>레벨기</option><option>줄자</option><option>안전벨트</option><option>방진마스크</option><option>보안경</option></datalist>
+</div>
+
+<!-- ===================== 도시락 신청 ===================== -->
+<div class="wrap hide" id="viewLunch">
+  <div class="card">
+    <div class="sec-h"><span class="ico" style="background:var(--green)">도</span><h2>도시락 신청</h2></div>
+    <div class="sec-b">
+      <div class="grid2 mb">
+        <div><label class="fld">일자</label><input type="date" id="lDate"></div>
+        <div><label class="fld req">신청자</label><input type="text" id="lAuthor" list="dlAuthor" placeholder="이름 입력"></div>
+      </div>
+      <div class="grid2 mb">
+        <div><label class="fld req">수량(개)</label><input type="number" id="lQty" inputmode="numeric" value="1" min="1"></div>
+        <div><label class="fld">메뉴</label>
+          <select id="lMenu"><option value="">선택 안 함</option><option>일반식</option><option>특식</option><option>소식</option></select>
+        </div>
+      </div>
+      <div class="mb">
+        <label class="fld">점심시간 위치/구역 <span style="font-weight:500;color:#9aa3ad">· 배달용 · 선택</span></label>
+        <select id="lLoc">
+          <option value="">선택 안 함</option>
+          <option>D동</option><option>C동</option><option>B동</option>
+          <option>서측 제작장</option><option>북측 공사부지</option>
+          <option>연도 야적장</option><option>송도 야적장</option><option>터널</option><option>기타</option>
+        </select>
+      </div>
+      <label class="fld">비고 <span style="font-weight:500;color:#9aa3ad">· 알레르기·불호 식재료 등</span></label>
+      <input type="text" id="lNote" placeholder="선택 입력">
+      <div class="mini" style="margin-top:10px">본인 몫은 수량 1, 우리 팀 전체를 한 번에 넣으려면 수량을 인원수만큼 늘려서 신청하세요. 그날 점심시간에 있을 위치를 넣으면 배달에 도움이 됩니다.</div>
+    </div>
+  </div>
 </div>
 
 <!-- ===================== 목록 ===================== -->
@@ -341,7 +429,18 @@
       <button id="segAll" class="on" onclick="setFilter('all')">전체</button>
       <button id="segToday" onclick="setFilter('today')">오늘</button>
     </div>
-    <button class="exp" onclick="exportCSV()">엑셀(CSV) 내보내기</button>
+  </div>
+  <div class="seg typeseg" id="typeSeg" style="margin-bottom:12px">
+    <button class="on" onclick="setTypeFilter('all',this)">전체</button>
+    <button onclick="setTypeFilter('log',this)">일보</button>
+    <button onclick="setTypeFilter('tool',this)">공구</button>
+    <button onclick="setTypeFilter('lunch',this)">도시락</button>
+  </div>
+  <div class="dmgmt">
+    <span class="dmgmt-t">내보내기</span>
+    <button onclick="exportCSV('log')">일보 CSV</button>
+    <button onclick="exportCSV('tool')">공구 CSV</button>
+    <button onclick="exportCSV('lunch')">도시락 CSV</button>
   </div>
   <div class="dmgmt">
     <span class="dmgmt-t">데이터 관리</span>
@@ -375,7 +474,7 @@
 
 <!-- 저장바 -->
 <div class="savebar" id="saveBar">
-  <div class="totbar">
+  <div class="totbar" id="totBar">
     <div class="tot"><b id="tMan">0</b><span>인원(명)</span></div>
     <div class="tot"><b id="tMd">0.0</b><span>공수</span></div>
     <div class="tot"><b id="tEq">0</b><span>장비</span></div>
@@ -383,8 +482,8 @@
     <div class="tot"><b id="tPh">0</b><span>사진</span></div>
   </div>
   <div class="actbar">
-    <button class="btn btn-ghost" onclick="resetForm(true)" id="btnReset">새로</button>
-    <button class="btn btn-main" onclick="saveRecord()" id="btnSave">저장</button>
+    <button class="btn btn-ghost" onclick="resetCurrent(true)" id="btnReset">새로</button>
+    <button class="btn btn-main" onclick="saveCurrent()" id="btnSave">저장</button>
   </div>
 </div>
 
@@ -553,7 +652,24 @@ function addMat(n='',q='',u='EA'){
     </div>`;
   $('matRows').appendChild(w); calc();
 }
-function rm(btn){ btn.closest('.row').remove(); calc(); }
+function rm(btn){ btn.closest('.row').remove(); calc(); calcTool(); }
+
+/* ============ 공구/소모품 신청 rows ============ */
+function addToolItem(n='',spec='',q='',u='EA'){
+  const w=document.createElement('div'); w.className='row';
+  w.innerHTML=`<div class="rh"><span class="rt">품목</span><button class="del" onclick="rm(this)">× 삭제</button></div>
+    <input list="dlToolItem" placeholder="품목명 (예: 그라인더 디스크)" value="${esc(n)}" oninput="calcTool()">
+    <div style="display:grid;grid-template-columns:1.3fr .8fr 1fr;gap:7px">
+      <input placeholder="규격" value="${esc(spec)}" oninput="calcTool()">
+      <input type="number" inputmode="decimal" placeholder="수량" value="${q}" oninput="calcTool()">
+      <input placeholder="단위" value="${esc(u)}" oninput="calcTool()">
+    </div>`;
+  $('toolRows').appendChild(w); calcTool();
+}
+function calcTool(){
+  const rows=$('toolRows'); if(!rows) return;
+  $('sumTool').textContent=`${rows.querySelectorAll('.row').length}품목`;
+}
 
 /* ============ totals ============ */
 function calc(){
@@ -577,7 +693,7 @@ function collect(){
   $('manRows').querySelectorAll('.row').forEach(r=>{const i=r.querySelectorAll('input'); if(i[0].value.trim()||i[1].value) man.push({job:i[0].value.trim(),cnt:num(i[1].value),hr:num(i[2].value)});});
   $('eqRows').querySelectorAll('.row').forEach(r=>{const i=r.querySelectorAll('input'); if(i[0].value.trim()) eq.push({name:i[0].value.trim(),cnt:num(i[1].value),hr:num(i[2].value)});});
   $('matRows').querySelectorAll('.row').forEach(r=>{const i=r.querySelectorAll('input'); if(i[0].value.trim()) mat.push({name:i[0].value.trim(),qty:num(i[1].value),unit:i[2].value.trim()});});
-  return {date:$('fDate').value||todayStr(), loc:curLoc(), author:$('fAuthor').value.trim(), kind:$('fKind').value.trim(), fcr:$('fFcr').value.trim(),
+  return {type:'log', date:$('fDate').value||todayStr(), loc:curLoc(), author:$('fAuthor').value.trim(), kind:$('fKind').value.trim(), fcr:$('fFcr').value.trim(),
     start:$('fStart').value, end:$('fEnd').value, dur:durHours($('fStart').value,$('fEnd').value),
     desc:$('fDesc').value.trim(), issue:$('fIssue').value.trim(), note:$('fNote').value.trim(),
     man, eq, mat, photos:formPhotos.slice()};
@@ -599,6 +715,60 @@ async function saveRecord(){
     pushRecord(r).then(async ok=>{ if(ok){ r.synced=true; await persist(r); updateSyncUI(); renderList(); } });
   }
 }
+
+/* ============ 공구/소모품 신청 ============ */
+function collectTool(){
+  const items=[];
+  $('toolRows').querySelectorAll('.row').forEach(r=>{const i=r.querySelectorAll('input');
+    if(i[0].value.trim()) items.push({name:i[0].value.trim(), spec:i[1].value.trim(), qty:num(i[2].value), unit:i[3].value.trim()});
+  });
+  return {type:'tool', date:$('tDate').value||todayStr(), author:$('tAuthor').value.trim(), loc:$('tLoc').value,
+    urgent:$('tUrgent').value, items, reason:$('tReason').value.trim(), note:$('tNote').value.trim()};
+}
+async function saveTool(){
+  const r=collectTool();
+  if(!r.author){ toast('신청자 이름을 입력하세요'); return; }
+  if(r.items.length===0){ toast('신청 품목을 1개 이상 추가하세요'); return; }
+  if(editId){ r.id=editId; const i=records.findIndex(x=>x.id===editId); if(i>-1) records[i]=r; editId=null; }
+  else { r.id=Date.now()+''+Math.floor(Math.random()*1000); records.unshift(r); }
+  r.synced=false; await persist(r);
+  try{ if(r.author) localStorage.setItem('rhs_last_author', r.author); }catch(e){}
+  $('btnSave').textContent='저장'; renderList(); resetTool(false); toast('신청 저장되었습니다'); showTab('list');
+  if(getSyncUrl()){ pushRecord(r).then(async ok=>{ if(ok){ r.synced=true; await persist(r); updateSyncUI(); renderList(); } }); }
+}
+function resetTool(ask){
+  if(ask){ const c=collectTool(); if((c.items.length||c.reason) && !confirm('작성 중인 내용을 지우고 새로 시작할까요?')) return; }
+  $('tDate').value=todayStr(); $('tLoc').value=''; $('tUrgent').value='일반'; $('tReason').value=''; $('tNote').value='';
+  try{ const la=localStorage.getItem('rhs_last_author'); if(la) $('tAuthor').value=la; }catch(e){}
+  $('toolRows').innerHTML=''; addToolItem(); editId=null; $('btnSave').textContent='저장'; calcTool();
+}
+
+/* ============ 도시락 신청 ============ */
+function collectLunch(){
+  return {type:'lunch', date:$('lDate').value||todayStr(), author:$('lAuthor').value.trim(), qty:num($('lQty').value)||1, menu:$('lMenu').value, loc:$('lLoc').value, note:$('lNote').value.trim()};
+}
+async function saveLunch(){
+  const r=collectLunch();
+  if(!r.author){ toast('신청자 이름을 입력하세요'); return; }
+  if(!r.qty || r.qty<1){ toast('수량을 입력하세요'); return; }
+  if(editId){ r.id=editId; const i=records.findIndex(x=>x.id===editId); if(i>-1) records[i]=r; editId=null; }
+  else { r.id=Date.now()+''+Math.floor(Math.random()*1000); records.unshift(r); }
+  r.synced=false; await persist(r);
+  try{ if(r.author) localStorage.setItem('rhs_last_author', r.author); }catch(e){}
+  $('btnSave').textContent='저장'; renderList(); resetLunch(false); toast('신청 저장되었습니다'); showTab('list');
+  if(getSyncUrl()){ pushRecord(r).then(async ok=>{ if(ok){ r.synced=true; await persist(r); updateSyncUI(); renderList(); } }); }
+}
+function resetLunch(ask){
+  if(ask){ const c=collectLunch(); if((c.qty>1||c.note) && !confirm('작성 중인 내용을 지우고 새로 시작할까요?')) return; }
+  $('lDate').value=todayStr(); $('lQty').value=1; $('lMenu').value=''; $('lLoc').value=''; $('lNote').value='';
+  try{ const la=localStorage.getItem('rhs_last_author'); if(la) $('lAuthor').value=la; }catch(e){}
+  editId=null; $('btnSave').textContent='저장';
+}
+
+/* ============ 탭별 저장/초기화 디스패처 ============ */
+let currentTab='write';
+function saveCurrent(){ if(currentTab==='tool') saveTool(); else if(currentTab==='lunch') saveLunch(); else saveRecord(); }
+function resetCurrent(ask){ if(currentTab==='tool') resetTool(ask); else if(currentTab==='lunch') resetLunch(ask); else resetForm(ask); }
 
 /* ============ 자동취합(구글시트) ============ */
 function getSyncUrl(){ try{ return (localStorage.getItem('rhs_sync_url')||'').trim() || SYNC_URL; }catch(e){ return SYNC_URL; } }
@@ -674,41 +844,93 @@ function resetForm(ask){
 
 /* ============ list ============ */
 let filter='all';
+let typeFilter='all';
 function setFilter(f){ filter=f; $('segAll').classList.toggle('on',f==='all'); $('segToday').classList.toggle('on',f==='today'); renderList(); }
+function setTypeFilter(t, btn){ typeFilter=t; document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.remove('on')); if(btn) btn.classList.add('on'); renderList(); }
 function sorted(){ return records.slice().sort((a,b)=> (a.id<b.id?1:-1)); }
-function visible(){ const s=sorted(); return filter==='today'?s.filter(r=>r.date===todayStr()):s; }
+function visible(){
+  let s=sorted();
+  if(filter==='today') s=s.filter(r=>r.date===todayStr());
+  if(typeFilter!=='all') s=s.filter(r=>(r.type||'log')===typeFilter);
+  return s;
+}
 function renderList(){
   const n=records.length; $('cnt').textContent=n; $('cnt').classList.toggle('hide',n===0);
   const list=visible(); const el=$('recList');
-  if(list.length===0){ el.innerHTML=`<div class="empty"><b>${filter==='today'?'오늘 기록이 없습니다':'아직 저장된 기록이 없습니다'}</b>작성 탭에서 첫 일보를 입력하세요.</div>`; return; }
-  el.innerHTML=list.map(r=>{
-    const men=r.man.reduce((s,m)=>s+m.cnt,0), md=r.man.reduce((s,m)=>s+m.cnt*m.hr/8,0);
-    const eq=r.eq.reduce((s,e)=>s+e.cnt,0); const ph=(r.photos||[]).length;
-    const chips=[];
-    if(men) chips.push(`<span class="chip">인원 ${men}명 · ${f1(md)}공수</span>`);
-    if(eq) chips.push(`<span class="chip">장비 ${eq}대</span>`);
-    if(r.mat.length) chips.push(`<span class="chip">자재 ${r.mat.length}품목</span>`);
-    if(r.dur) chips.push(`<span class="chip">${f1(r.dur)}h</span>`);
-    if(r.fcr) chips.push(`<span class="chip" style="background:#FBF1E2;color:#8A5A1E">FCR ${esc(r.fcr)}</span>`);
-    if(ph) chips.push(`<span class="chip ph">📷 ${ph}매</span>`);
-    if(r.issue) chips.push(`<span class="chip">#${esc(r.issue)}</span>`);
-    if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송</span>`);
-    const thumbs = ph?`<div class="rec-ph">${r.photos.slice(0,8).map(p=>`<img src="${p.data}" onclick="viewSaved('${r.id}','${p.id}')">`).join('')}</div>`:'';
-    return `<div class="rec">
-      <div class="rec-h"><span class="kind">${esc(r.kind)||'-'}</span>
-        <div class="meta"><div class="loc">${esc(r.loc)}</div>
-          <div class="dt">${r.date} (${dow(r.date)})${r.start?` · ${r.start}~${r.end||''}`:''}${r.author?` · ${esc(r.author)}`:''}</div>
-          ${r.desc?`<div class="desc">${esc(r.desc)}</div>`:''}</div></div>
-      ${thumbs}
-      ${chips.length?`<div class="rec-stat">${chips.join('')}</div>`:''}
-      <div class="rec-act">
-        <button onclick="copyKakao('${r.id}')">카톡 복사</button>
-        ${ph?`<button class="sheet" onclick="photoSheet('${r.id}')">사진대지</button>`:''}
-        <button onclick="editRec('${r.id}')">수정</button>
-        <button onclick="dupRec('${r.id}')">복제</button>
-        <button class="danger" onclick="delRec('${r.id}')">삭제</button>
-      </div></div>`;
-  }).join('');
+  if(list.length===0){ el.innerHTML=`<div class="empty"><b>${filter==='today'?'오늘 기록이 없습니다':'아직 저장된 기록이 없습니다'}</b>탭에서 새 항목을 입력하세요.</div>`; return; }
+  el.innerHTML=list.map(r=>renderCard(r)).join('');
+}
+function renderCard(r){
+  const t=r.type||'log';
+  if(t==='tool') return renderToolCard(r);
+  if(t==='lunch') return renderLunchCard(r);
+  return renderLogCard(r);
+}
+function renderLogCard(r){
+  const men=r.man.reduce((s,m)=>s+m.cnt,0), md=r.man.reduce((s,m)=>s+m.cnt*m.hr/8,0);
+  const eq=r.eq.reduce((s,e)=>s+e.cnt,0); const ph=(r.photos||[]).length;
+  const chips=[];
+  if(men) chips.push(`<span class="chip">인원 ${men}명 · ${f1(md)}공수</span>`);
+  if(eq) chips.push(`<span class="chip">장비 ${eq}대</span>`);
+  if(r.mat.length) chips.push(`<span class="chip">자재 ${r.mat.length}품목</span>`);
+  if(r.dur) chips.push(`<span class="chip">${f1(r.dur)}h</span>`);
+  if(r.fcr) chips.push(`<span class="chip" style="background:#FBF1E2;color:#8A5A1E">FCR ${esc(r.fcr)}</span>`);
+  if(ph) chips.push(`<span class="chip ph">📷 ${ph}매</span>`);
+  if(r.issue) chips.push(`<span class="chip">#${esc(r.issue)}</span>`);
+  if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송</span>`);
+  const thumbs = ph?`<div class="rec-ph">${r.photos.slice(0,8).map(p=>`<img src="${p.data}" onclick="viewSaved('${r.id}','${p.id}')">`).join('')}</div>`:'';
+  return `<div class="rec">
+    <div class="rec-h"><span class="kind">${esc(r.kind)||'-'}</span>
+      <div class="meta"><div class="loc">${esc(r.loc)}</div>
+        <div class="dt">${r.date} (${dow(r.date)})${r.start?` · ${r.start}~${r.end||''}`:''}${r.author?` · ${esc(r.author)}`:''}</div>
+        ${r.desc?`<div class="desc">${esc(r.desc)}</div>`:''}</div></div>
+    ${thumbs}
+    ${chips.length?`<div class="rec-stat">${chips.join('')}</div>`:''}
+    <div class="rec-act">
+      <button onclick="copyKakao('${r.id}')">카톡 복사</button>
+      ${ph?`<button class="sheet" onclick="photoSheet('${r.id}')">사진대지</button>`:''}
+      <button onclick="editRec('${r.id}')">수정</button>
+      <button onclick="dupRec('${r.id}')">복제</button>
+      <button class="danger" onclick="delRec('${r.id}')">삭제</button>
+    </div></div>`;
+}
+function renderToolCard(r){
+  const items=r.items||[];
+  const itemTxt=items.map(it=>`${it.name}${it.spec?(' ('+it.spec+')'):''} ${it.qty||''}${it.unit||''}`).join(', ');
+  const chips=[`<span class="typetag tool">공구/소모품</span>`, `<span class="chip">${items.length}품목</span>`];
+  if(r.urgent==='긴급') chips.push(`<span class="chip" style="background:#FBE9E7;color:#C0392B">긴급</span>`);
+  if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송</span>`);
+  return `<div class="rec">
+    <div class="rec-h"><span class="kind" style="background:var(--amber-bg);color:var(--amber)">공구</span>
+      <div class="meta"><div class="loc">${esc(r.author)||'-'}${r.loc?(' · '+esc(r.loc)):''}</div>
+        <div class="dt">${r.date} (${dow(r.date)})</div>
+        ${itemTxt?`<div class="desc">${esc(itemTxt)}</div>`:''}
+        ${r.reason?`<div class="desc">사유: ${esc(r.reason)}</div>`:''}</div></div>
+    <div class="rec-stat">${chips.join('')}</div>
+    <div class="rec-act">
+      <button onclick="copyKakao('${r.id}')">카톡 복사</button>
+      <button onclick="editRec('${r.id}')">수정</button>
+      <button onclick="dupRec('${r.id}')">복제</button>
+      <button class="danger" onclick="delRec('${r.id}')">삭제</button>
+    </div></div>`;
+}
+function renderLunchCard(r){
+  const chips=[`<span class="typetag lunch">도시락</span>`, `<span class="chip">${r.qty||1}개</span>`];
+  if(r.menu) chips.push(`<span class="chip">${esc(r.menu)}</span>`);
+  if(r.loc) chips.push(`<span class="chip">📍 ${esc(r.loc)}</span>`);
+  if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송</span>`);
+  return `<div class="rec">
+    <div class="rec-h"><span class="kind" style="background:var(--green-bg);color:var(--green)">도시락</span>
+      <div class="meta"><div class="loc">${esc(r.author)||'-'}</div>
+        <div class="dt">${r.date} (${dow(r.date)})</div>
+        ${r.note?`<div class="desc">${esc(r.note)}</div>`:''}</div></div>
+    <div class="rec-stat">${chips.join('')}</div>
+    <div class="rec-act">
+      <button onclick="copyKakao('${r.id}')">카톡 복사</button>
+      <button onclick="editRec('${r.id}')">수정</button>
+      <button onclick="dupRec('${r.id}')">복제</button>
+      <button class="danger" onclick="delRec('${r.id}')">삭제</button>
+    </div></div>`;
 }
 function viewSaved(rid,pid){ const r=records.find(x=>x.id===rid); const p=(r.photos||[]).find(x=>x.id===pid); if(!p)return;
   $('mImg').src=p.data; $('mCat').value=p.cat||'현황'; $('mCap').value=p.cap||''; curPhotoIdx=-1;
@@ -718,6 +940,17 @@ async function delRec(id){ if(!confirm('이 기록을 삭제할까요?'))return;
 async function dupRec(id){ const r=JSON.parse(JSON.stringify(records.find(x=>x.id===id))); r.id=Date.now()+''+Math.floor(Math.random()*1000); r.date=todayStr(); records.unshift(r); await persist(r); renderList(); toast('복제됨'); }
 function editRec(id){
   const r=records.find(x=>x.id===id); if(!r)return; editId=id;
+  const t=r.type||'log';
+  if(t==='tool'){
+    $('tDate').value=r.date; $('tAuthor').value=r.author||''; $('tLoc').value=r.loc||''; $('tUrgent').value=r.urgent||'일반';
+    $('tReason').value=r.reason||''; $('tNote').value=r.note||'';
+    $('toolRows').innerHTML=''; (r.items&&r.items.length?r.items:[{}]).forEach(it=>addToolItem(it.name||'',it.spec||'',it.qty||'',it.unit||'EA'));
+    $('btnSave').textContent='수정 저장'; showTab('tool'); window.scrollTo(0,0); return;
+  }
+  if(t==='lunch'){
+    $('lDate').value=r.date; $('lAuthor').value=r.author||''; $('lQty').value=r.qty||1; $('lMenu').value=r.menu||''; $('lLoc').value=r.loc||''; $('lNote').value=r.note||'';
+    $('btnSave').textContent='수정 저장'; showTab('lunch'); window.scrollTo(0,0); return;
+  }
   $('fDate').value=r.date;
   const opts=[...$('fLoc').options].map(o=>o.value);
   if(opts.includes(r.loc)){ $('fLoc').value=r.loc; $('locEtcWrap').classList.add('hide'); }
@@ -733,6 +966,12 @@ function editRec(id){
 
 /* ============ kakao / csv ============ */
 function recText(r){
+  const t=r.type||'log';
+  if(t==='tool') return toolText(r);
+  if(t==='lunch') return lunchText(r);
+  return logText(r);
+}
+function logText(r){
   const men=r.man.reduce((s,m)=>s+m.cnt,0), md=r.man.reduce((s,m)=>s+m.cnt*m.hr/8,0);
   let t=`[돌관작업 일보] ${r.date} (${dow(r.date)})\n■ 위치: ${r.loc}\n${r.author?`■ 작성: ${r.author}\n`:''}■ 종류: ${r.kind}\n${r.fcr?`■ FCR 종류: ${r.fcr}\n`:''}`;
   if(r.start) t+=`■ 시간: ${r.start}~${r.end||''} (${f1(r.dur)}h)\n`;
@@ -745,6 +984,21 @@ function recText(r){
   if(r.note) t+=`※ 비고: ${r.note}\n`;
   return t.trim();
 }
+function toolText(r){
+  const items=r.items||[];
+  let t=`[공구/소모품 신청] ${r.date} (${dow(r.date)})\n■ 신청자: ${r.author}\n${r.loc?`■ 위치: ${r.loc}\n`:''}■ 긴급도: ${r.urgent||'일반'}\n`;
+  if(items.length){ t+=`\n▶ 신청 품목\n`; items.forEach(it=>t+=` - ${it.name}${it.spec?(' ('+it.spec+')'):''} ${it.qty||''}${it.unit||''}\n`); }
+  if(r.reason) t+=`■ 사유: ${r.reason}\n`;
+  if(r.note) t+=`※ 비고: ${r.note}\n`;
+  return t.trim();
+}
+function lunchText(r){
+  let t=`[도시락 신청] ${r.date} (${dow(r.date)})\n■ 신청자: ${r.author}\n■ 수량: ${r.qty||1}개\n`;
+  if(r.menu) t+=`■ 메뉴: ${r.menu}\n`;
+  if(r.loc) t+=`■ 점심 위치: ${r.loc}\n`;
+  if(r.note) t+=`※ 비고: ${r.note}\n`;
+  return t.trim();
+}
 function copyKakao(id){
   const r=records.find(x=>x.id===id); const txt=recText(r);
   if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(()=>toast('카톡용 텍스트 복사됨'),()=>fb(txt));
@@ -752,21 +1006,44 @@ function copyKakao(id){
   function fb(t){ const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');toast('복사됨');}catch(e){prompt('복사하세요',t);} ta.remove(); }
 }
 function csvCell(v){ v=(v==null?'':String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
-function exportCSV(){
-  if(records.length===0){ toast('내보낼 기록이 없습니다'); return; }
-  const head=['일자','요일','위치','작성자/팀','돌관작업 종류','FCR 종류','시작','종료','작업시간(h)','작업내용','구분','항목/규격','인원·대수·수량','시간(h)/단위','공수(M/D)','사진매수','이슈/FCR번호','비고'];
-  const rows=[head];
-  sorted().slice().reverse().forEach(r=>{
-    const base=[r.date,dow(r.date),r.loc,r.author||'',r.kind,r.fcr||'',r.start,r.end,f1(r.dur),r.desc];
-    const tail=[(r.photos||[]).length,r.issue,r.note]; let any=false;
-    r.man.forEach(m=>{ rows.push([...base,'인원',m.job,m.cnt,f1(m.hr),f1(m.cnt*m.hr/8),...tail]); any=true; });
-    r.eq.forEach(e=>{ rows.push([...base,'장비',e.name,e.cnt,f1(e.hr),'',...tail]); any=true; });
-    r.mat.forEach(m=>{ rows.push([...base,'자재',m.name,m.qty,m.unit,'',...tail]); any=true; });
-    if(!any) rows.push([...base,'','','','','',...tail]);
-  });
-  const csv='\uFEFF'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+function exportCSV(type){
+  type = type||'log';
+  const label={log:'일보',tool:'공구',lunch:'도시락'}[type];
+  const rows0 = records.filter(r=>(r.type||'log')===type);
+  if(rows0.length===0){ toast(`내보낼 ${label} 기록이 없습니다`); return; }
+  const ordered = rows0.slice().sort((a,b)=>a.id<b.id?1:-1).reverse();
+  let rows, filename;
+  if(type==='log'){
+    const head=['일자','요일','위치','작성자/팀','돌관작업 종류','FCR 종류','시작','종료','작업시간(h)','작업내용','구분','항목/규격','인원·대수·수량','시간(h)/단위','공수(M/D)','사진매수','이슈/FCR번호','비고'];
+    rows=[head];
+    ordered.forEach(r=>{
+      const base=[r.date,dow(r.date),r.loc,r.author||'',r.kind,r.fcr||'',r.start,r.end,f1(r.dur),r.desc];
+      const tail=[(r.photos||[]).length,r.issue,r.note]; let any=false;
+      r.man.forEach(m=>{ rows.push([...base,'인원',m.job,m.cnt,f1(m.hr),f1(m.cnt*m.hr/8),...tail]); any=true; });
+      r.eq.forEach(e=>{ rows.push([...base,'장비',e.name,e.cnt,f1(e.hr),'',...tail]); any=true; });
+      r.mat.forEach(m=>{ rows.push([...base,'자재',m.name,m.qty,m.unit,'',...tail]); any=true; });
+      if(!any) rows.push([...base,'','','','','',...tail]);
+    });
+    filename=`RHS_돌관작업일보_${todayStr()}.csv`;
+  } else if(type==='tool'){
+    const head=['일자','요일','신청자','위치','긴급도','품목명','규격','수량','단위','사유','비고'];
+    rows=[head];
+    ordered.forEach(r=>{
+      const base=[r.date,dow(r.date),r.author||'',r.loc||'',r.urgent||'일반'];
+      const tail=[r.reason||'',r.note||'']; const items=r.items||[];
+      if(items.length) items.forEach(it=>rows.push([...base,it.name||'',it.spec||'',it.qty||'',it.unit||'',...tail]));
+      else rows.push([...base,'','','','',...tail]);
+    });
+    filename=`RHS_공구소모품신청_${todayStr()}.csv`;
+  } else {
+    const head=['일자','요일','신청자','수량','메뉴','점심 위치','비고'];
+    rows=[head];
+    ordered.forEach(r=>{ rows.push([r.date,dow(r.date),r.author||'',r.qty||1,r.menu||'',r.loc||'',r.note||'']); });
+    filename=`RHS_도시락신청_${todayStr()}.csv`;
+  }
+  const csv='\uFEFF'+rows.map(row=>row.map(csvCell).join(',')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download=`RHS_돌관작업일보_${todayStr()}.csv`; document.body.appendChild(a); a.click(); a.remove();
+  const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000); toast('CSV 파일이 저장되었습니다');
 }
 
@@ -830,10 +1107,17 @@ function importJSON(input){
 
 /* ============ tabs / init ============ */
 function showTab(t){
-  const w=t==='write';
-  $('viewWrite').classList.toggle('hide',!w); $('viewList').classList.toggle('hide',w); $('saveBar').classList.toggle('hide',!w);
-  $('tabWrite').classList.toggle('on',w); $('tabList').classList.toggle('on',!w);
-  if(!w){ renderList(); updateSyncUI(); pushUnsynced(false); } window.scrollTo(0,0);
+  currentTab=t;
+  const views={write:'viewWrite', tool:'viewTool', lunch:'viewLunch', list:'viewList'};
+  Object.keys(views).forEach(k=>{ $(views[k]).classList.toggle('hide', k!==t); });
+  $('tabWrite').classList.toggle('on', t==='write');
+  $('tabTool').classList.toggle('on', t==='tool');
+  $('tabLunch').classList.toggle('on', t==='lunch');
+  $('tabList').classList.toggle('on', t==='list');
+  $('saveBar').classList.toggle('hide', t==='list');
+  $('totBar').classList.toggle('hide', t!=='write');
+  if(t==='list'){ renderList(); updateSyncUI(); pushUnsynced(false); }
+  window.scrollTo(0,0);
 }
 $('fLoc').addEventListener('change',e=>{ $('locEtcWrap').classList.toggle('hide',e.target.value!=='기타(직접입력)'); });
 $('fStart').addEventListener('change',calc); $('fEnd').addEventListener('change',calc);
@@ -849,9 +1133,9 @@ const _open=openPhoto; openPhoto=function(i){ unlockModal(); _open(i); };
   if(memOnly||!useIDB) $('memNotice').style.display='block';
   records=await loadAll();
   $('hDate').textContent=`${todayStr()} (${dow(new Date())})`;
-  $('fDate').value=todayStr();
-  try{ const la=localStorage.getItem('rhs_last_author'); if(la) $('fAuthor').value=la; }catch(e){}
-  addMan(); renderPhotos(); renderList(); calc(); autoIssue(true);
+  $('fDate').value=todayStr(); $('tDate').value=todayStr(); $('lDate').value=todayStr();
+  try{ const la=localStorage.getItem('rhs_last_author'); if(la){ $('fAuthor').value=la; $('tAuthor').value=la; $('lAuthor').value=la; } }catch(e){}
+  addMan(); addToolItem(); renderPhotos(); renderList(); calc(); calcTool(); autoIssue(true);
   updateSyncUI(); pushUnsynced(false);
 })();
 </script>
