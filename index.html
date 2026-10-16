@@ -220,6 +220,7 @@
   <div class="tabs">
     <button class="tab on" id="tabWrite" onclick="showTab('write')">일보</button>
     <button class="tab" id="tabTool" onclick="showTab('tool')">공구/소모품</button>
+    <button class="tab hide" id="tabLunch" onclick="showTab('lunch')">도시락</button>
     <button class="tab" id="tabList" onclick="showTab('list')">목록<span class="badge hide" id="cnt">0</span></button>
   </div>
 </header>
@@ -256,7 +257,7 @@
             <option value="">선택</option>
             <option>D동</option><option>C동</option><option>B동</option>
             <option>서측 제작장</option><option>북측 공사부지</option>
-            <option>연도 야적장</option><option>송도 야적장</option>
+            <option>연도 야적장</option><option>송도 야적장</option><option>용원 야적장</option>
             <option>터널</option><option>기타(직접입력)</option>
           </select>
         </div>
@@ -359,7 +360,7 @@
           <option value="">선택 안 함</option>
           <option>D동</option><option>C동</option><option>B동</option>
           <option>서측 제작장</option><option>북측 공사부지</option>
-          <option>연도 야적장</option><option>송도 야적장</option><option>터널</option><option>기타</option>
+          <option>연도 야적장</option><option>송도 야적장</option><option>용원 야적장</option><option>터널</option><option>기타</option>
         </select>
       </div>
       <label class="fld">긴급도</label>
@@ -411,7 +412,7 @@
           <option value="">선택 안 함</option>
           <option>D동</option><option>C동</option><option>B동</option>
           <option>서측 제작장</option><option>북측 공사부지</option>
-          <option>연도 야적장</option><option>송도 야적장</option><option>터널</option><option>기타</option>
+          <option>연도 야적장</option><option>송도 야적장</option><option>용원 야적장</option><option>터널</option><option>기타</option>
         </select>
       </div>
       <label class="fld">비고 <span style="font-weight:500;color:#9aa3ad">· 알레르기·불호 식재료 등</span></label>
@@ -433,13 +434,13 @@
     <button class="on" onclick="setTypeFilter('all',this)">전체</button>
     <button onclick="setTypeFilter('log',this)">일보</button>
     <button onclick="setTypeFilter('tool',this)">공구</button>
-    <button onclick="setTypeFilter('lunch',this)">도시락</button>
+    <button class="hide" onclick="setTypeFilter('lunch',this)">도시락</button>
   </div>
   <div class="dmgmt">
     <span class="dmgmt-t">내보내기</span>
     <button onclick="exportCSV('log')">일보 CSV</button>
     <button onclick="exportCSV('tool')">공구 CSV</button>
-    <button onclick="exportCSV('lunch')">도시락 CSV</button>
+    <button class="hide" onclick="exportCSV('lunch')">도시락 CSV</button>
   </div>
   <div class="dmgmt">
     <span class="dmgmt-t">데이터 관리</span>
@@ -512,7 +513,7 @@
 /* ============ storage: IndexedDB (+ localStorage fallback) ============ */
 const KEY='rhs_dolgwan_logs_v1';
 /* ===== 자동취합(구글시트) 설정 ===== */
-const SYNC_URL   = "https://script.google.com/macros/s/AKfycby0O6hLczUpuBzVeKNKYVPjMbqte75lT2zIRedLpKAcxdt1_eOIjmRtoIS6el_MYG0E/exec";          /* ← 현규: 구글 Apps Script 웹앱 URL을 여기 따옴표 안에 붙여넣고 GitHub에 업로드하면 전 팀장에 적용 */
+const SYNC_URL   = "";          /* ← 현규: 구글 Apps Script 웹앱 URL을 여기 따옴표 안에 붙여넣고 GitHub에 업로드하면 전 팀장에 적용 */
 const SYNC_TOKEN = "rhs2026";   /* Apps Script의 TOKEN과 동일해야 함 */
 let useIDB=true, idb=null, memOnly=false, mem=[];
 function openDB(){return new Promise(res=>{
@@ -772,21 +773,34 @@ function resetCurrent(ask){ if(currentTab==='tool') resetTool(ask); else if(curr
 /* ============ 자동취합(구글시트) ============ */
 function getSyncUrl(){ try{ return (localStorage.getItem('rhs_sync_url')||'').trim() || SYNC_URL; }catch(e){ return SYNC_URL; } }
 function getSyncPhotos(){ try{ const v=localStorage.getItem('rhs_sync_photos'); return v===null?true:v==='1'; }catch(e){ return true; } }
+/* 서버(Apps Script)가 {ok:true}로 응답해야만 '전송됨' 처리. 응답 확인 불가/실패 시 미전송 유지 → 재전송 */
+const _inflight=new Set(); let _pushing=false;
 async function pushRecord(r){
   const url=getSyncUrl(); if(!url) return false;
+  if(_inflight.has(r.id)) return false;          // 같은 기록 동시 이중전송 차단
+  _inflight.add(r.id);
+  const body=JSON.stringify({token:SYNC_TOKEN, withPhotos:getSyncPhotos(), record:r});
   try{
-    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({token:SYNC_TOKEN, withPhotos:getSyncPhotos(), record:r})});
-    return true;   // no-cors라 응답은 못 읽지만, 네트워크 전송 성공이면 시트에 반영됨
-  }catch(e){ return false; }
+    const res=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body});
+    const j=await res.json().catch(()=>null);
+    if(j&&j.ok) return true;
+    r.syncErr=(j&&j.err)?String(j.err):('HTTP '+res.status); return false;
+  }catch(e){
+    r.syncErr='네트워크/연결 오류'; return false;
+  }finally{ _inflight.delete(r.id); }
 }
 async function pushUnsynced(manual){
   const url=getSyncUrl(); if(!url){ if(manual) toast('먼저 ⚙설정에서 주소를 넣으세요'); return; }
+  if(_pushing){ if(manual) toast('전송 진행 중입니다'); return; }
   const pend=records.filter(r=>!r.synced);
   if(!pend.length){ updateSyncUI(); if(manual) toast('전송할 미전송 기록이 없습니다'); return; }
-  if(manual) toast('전송 중…');
-  for(const r of pend){ const ok=await pushRecord(r); if(ok){ r.synced=true; await persist(r); } }
-  updateSyncUI(); renderList(); if(manual) toast('전송 완료');
+  _pushing=true; if(manual) toast('전송 중…');
+  let okN=0, failN=0, lastErr='';
+  try{
+    for(const r of pend){ const ok=await pushRecord(r); if(ok){ r.synced=true; delete r.syncErr; okN++; } else { failN++; lastErr=r.syncErr||''; } await persist(r); }
+  }finally{ _pushing=false; }
+  updateSyncUI(); renderList();
+  if(manual) toast(failN?`전송 ${okN}건 성공 · ${failN}건 실패 (${lastErr})`:'전송 완료');
 }
 function updateSyncUI(){
   const on=!!getSyncUrl(); const bar=$('syncBar'); if(!bar) return;
@@ -876,7 +890,7 @@ function renderLogCard(r){
   if(r.fcr) chips.push(`<span class="chip" style="background:#FBF1E2;color:#8A5A1E">FCR ${esc(r.fcr)}</span>`);
   if(ph) chips.push(`<span class="chip ph">📷 ${ph}매</span>`);
   if(r.issue) chips.push(`<span class="chip">#${esc(r.issue)}</span>`);
-  if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송</span>`);
+  if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송${r.syncErr?(' · '+esc(r.syncErr)):''}</span>`);
   const thumbs = ph?`<div class="rec-ph">${r.photos.slice(0,8).map(p=>`<img src="${p.data}" onclick="viewSaved('${r.id}','${p.id}')">`).join('')}</div>`:'';
   return `<div class="rec">
     <div class="rec-h"><span class="kind">${esc(r.kind)||'-'}</span>
@@ -898,7 +912,7 @@ function renderToolCard(r){
   const itemTxt=items.map(it=>`${it.name}${it.spec?(' ('+it.spec+')'):''} ${it.qty||''}${it.unit||''}`).join(', ');
   const chips=[`<span class="typetag tool">공구/소모품</span>`, `<span class="chip">${items.length}품목</span>`];
   if(r.urgent==='긴급') chips.push(`<span class="chip" style="background:#FBE9E7;color:#C0392B">긴급</span>`);
-  if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송</span>`);
+  if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송${r.syncErr?(' · '+esc(r.syncErr)):''}</span>`);
   return `<div class="rec">
     <div class="rec-h"><span class="kind" style="background:var(--amber-bg);color:var(--amber)">공구</span>
       <div class="meta"><div class="loc">${esc(r.author)||'-'}${r.loc?(' · '+esc(r.loc)):''}</div>
@@ -917,7 +931,7 @@ function renderLunchCard(r){
   const chips=[`<span class="typetag lunch">도시락</span>`, `<span class="chip">${r.qty||1}개</span>`];
   if(r.menu) chips.push(`<span class="chip">${esc(r.menu)}</span>`);
   if(r.loc) chips.push(`<span class="chip">📍 ${esc(r.loc)}</span>`);
-  if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송</span>`);
+  if(getSyncUrl() && r.synced!==true) chips.push(`<span class="chip pend">⏳ 미전송${r.syncErr?(' · '+esc(r.syncErr)):''}</span>`);
   return `<div class="rec">
     <div class="rec-h"><span class="kind" style="background:var(--green-bg);color:var(--green)">도시락</span>
       <div class="meta"><div class="loc">${esc(r.author)||'-'}</div>
