@@ -513,7 +513,7 @@
 /* ============ storage: IndexedDB (+ localStorage fallback) ============ */
 const KEY='rhs_dolgwan_logs_v1';
 /* ===== 자동취합(구글시트) 설정 ===== */
-const SYNC_URL   = "";          /* ← 현규: 구글 Apps Script 웹앱 URL을 여기 따옴표 안에 붙여넣고 GitHub에 업로드하면 전 팀장에 적용 */
+const SYNC_URL   = "https://script.google.com/macros/s/AKfycby0O6hLczUpuBzVeKNKYVPjMbqte75lT2zIRedLpKAcxdt1_eOIjmRtoIS6el_MYG0E/exec";          /* ← 현규: 구글 Apps Script 웹앱 URL을 여기 따옴표 안에 붙여넣고 GitHub에 업로드하면 전 팀장에 적용 */
 const SYNC_TOKEN = "rhs2026";   /* Apps Script의 TOKEN과 동일해야 함 */
 let useIDB=true, idb=null, memOnly=false, mem=[];
 function openDB(){return new Promise(res=>{
